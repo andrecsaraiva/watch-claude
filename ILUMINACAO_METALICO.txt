@@ -1,0 +1,21 @@
+Alterações feitas para destacar melhor o metálico do relógio:
+
+"
+"- renderer.toneMapping = THREE.ACESFilmicToneMapping
+"
+"- renderer.toneMappingExposure = 1.28
+"
+"- CONFIG.envMapIntensity = 2.2
+"
+"- Luzes com mais contraste: ambient mais baixa, hemisphere, key, fill e rim
+"
+"- Fallback de ambiente com RoomEnvironment quando o HDR não existir
+"
+"- Heurística leve para materiais com nomes de metal/case/bezel/crown/watch
+
+"
+"Para clarear mais: aumente toneMappingExposure para 1.4.
+"
+"Para mais reflexo metálico: aumente CONFIG.envMapIntensity para 2.8 ou 3.0.
+"
+"Se alguma parte não metálica ficar brilhando demais, reduza CONFIG.envMapIntensity para 1.6-1.8.

@@ -48,7 +48,7 @@ const CONFIG = {
   posAlphaFast: 0.34,
   scaleAlpha: 0.10,
   sideCompMin: 0.40, // stronger compensation so the watch shrinks less at 90°
-  envMapIntensity: 1.0,
+  envMapIntensity: 2.2,
 };
 
 const state = {
@@ -169,11 +169,13 @@ async function boot() {
     THREE,
     { GLTFLoader },
     { RGBELoader },
+    { RoomEnvironment },
     visionBundle,
   ] = await Promise.all([
     import('https://esm.sh/three@0.174.0'),
     import('https://esm.sh/three@0.174.0/examples/jsm/loaders/GLTFLoader'),
     import('https://esm.sh/three@0.174.0/examples/jsm/loaders/RGBELoader'),
+    import('https://esm.sh/three@0.174.0/examples/jsm/environments/RoomEnvironment'),
     import('https://unpkg.com/@mediapipe/tasks-vision@0.10.34/vision_bundle.mjs'),
   ]);
 
@@ -181,6 +183,7 @@ async function boot() {
     THREE,
     GLTFLoader,
     RGBELoader,
+    RoomEnvironment,
     FilesetResolver: visionBundle.FilesetResolver,
     HandLandmarker: visionBundle.HandLandmarker,
   };
@@ -258,21 +261,34 @@ function setupThree() {
   });
   state.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 
+  // Melhor resposta visual para materiais PBR/metálicos.
+  if ('outputColorSpace' in state.renderer) state.renderer.outputColorSpace = THREE.SRGBColorSpace;
+  state.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  state.renderer.toneMappingExposure = 1.28;
+
   state.scene = new THREE.Scene();
   state.pmremGenerator = new THREE.PMREMGenerator(state.renderer);
   state.camera = new THREE.OrthographicCamera(-100, 100, 100, -100, 0.1, 2000);
   state.camera.position.z = 1000;
 
-  const ambient = new THREE.AmbientLight(0xffffff, 0.95);
+  // Luzes com mais contraste para o metal aparecer melhor.
+  const ambient = new THREE.AmbientLight(0xffffff, 0.55);
   state.scene.add(ambient);
 
-  const key = new THREE.DirectionalLight(0xffffff, 0.90);
-  key.position.set(0, 0, 420);
+  const hemi = new THREE.HemisphereLight(0xffffff, 0x33404f, 0.85);
+  state.scene.add(hemi);
+
+  const key = new THREE.DirectionalLight(0xffffff, 1.25);
+  key.position.set(160, 180, 520);
   state.scene.add(key);
 
-  const fill = new THREE.DirectionalLight(0xffffff, 0.40);
-  fill.position.set(-250, 120, 240);
+  const fill = new THREE.DirectionalLight(0xdde8ff, 0.42);
+  fill.position.set(-340, 90, 260);
   state.scene.add(fill);
+
+  const rim = new THREE.DirectionalLight(0xffffff, 0.70);
+  rim.position.set(-260, 260, -380);
+  state.scene.add(rim);
 
   resizeStage();
 }
@@ -289,8 +305,20 @@ async function loadEnvironment() {
     state.scene.environment = envRT.texture;
     hdrTexture.dispose();
     logLine('HDR environment loaded for reflections.');
+    return;
   } catch (error) {
     logLine(`HDR environment failed: ${error?.message || error}`);
+  }
+
+  try {
+    if (!state.libs.RoomEnvironment) throw new Error('RoomEnvironment unavailable');
+    const room = new state.libs.RoomEnvironment();
+    const envRT = state.pmremGenerator.fromScene(room, 0.04);
+    state.scene.environment = envRT.texture;
+    room.dispose?.();
+    logLine('Fallback studio environment loaded for metal reflections.');
+  } catch (fallbackError) {
+    logLine(`Fallback environment failed: ${fallbackError?.message || fallbackError}`);
   }
 }
 
@@ -357,10 +385,22 @@ async function loadWatchModel() {
 
           const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
           for (const mat of mats) {
+            if (!mat) continue;
+
             if ('envMapIntensity' in mat) {
               mat.envMapIntensity = CONFIG.envMapIntensity;
-              mat.needsUpdate = true;
             }
+
+            // Heurística leve: força mais resposta metálica apenas em partes
+            // com nomes comuns de metal/caixa/bezel/coroa.
+            const tag = `${obj.name || ''} ${mat.name || ''}`.toLowerCase();
+            const looksMetal = /metal|steel|case|bezel|crown|chrome|silver|gold|relogio|relógio|watch/.test(tag);
+            if (looksMetal) {
+              if ('metalness' in mat) mat.metalness = Math.max(mat.metalness ?? 0, 0.75);
+              if ('roughness' in mat) mat.roughness = Math.min(mat.roughness ?? 0.35, 0.26);
+            }
+
+            mat.needsUpdate = true;
           }
 
           obj.renderOrder = 1;
