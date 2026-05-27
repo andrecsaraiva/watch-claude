@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Watch Try-On</title>
+  <meta
+    name="description"
+    content="Stable watch try-on prototype using wrist tracking on the phone camera."
+  />
+  <link rel="stylesheet" href="./css/watch-tryon.css" />
+  <meta name="google-site-verification" content="yvirgHkK75jDTmiv63DkEbG8oeBQT0Wx2xn8XCwj3Uk" />
+</head>
+<body>
+  <div class="wt-app">
+    <header class="wt-topbar">
+      <div class="wt-eyebrow">Watch Try-On</div>
+      <h1 class="wt-title">See the watch on your wrist</h1>
+      <p class="wt-subtitle">
+        Point your camera at the back of one hand. Keep your fingers visible and your wrist well lit.
+      </p>
+    </header>
+
+    <main class="wt-main">
+      <section class="wt-stage-card">
+        <div class="wt-stage" id="stage">
+          <video id="camera-video" playsinline autoplay muted></video>
+          <canvas id="three-canvas"></canvas>
+          <canvas id="debug-canvas" hidden></canvas>
+
+          <div class="wt-overlay">
+            <div class="wt-status" id="status-pill">Preparing try-on…</div>
+
+            <div class="wt-center-cta" id="center-cta">
+              <div class="wt-onboarding-card">
+                <div class="wt-onboarding-title">Start watch try-on</div>
+                <div class="wt-onboarding-copy">
+                  Use the rear camera for the best result. Show the full hand plus wrist.
+                </div>
+                <button class="wt-btn wt-btn-primary wt-btn-large" id="start-camera-btn" type="button">Start Try-On</button>
+              </div>
+            </div>
+
+            <div class="wt-hint" id="hint-text">
+              Hold the back of your hand in frame. Keep fingers slightly apart.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="wt-helper-card">
+        <div class="wt-helper-title">How to get the best result</div>
+        <ul class="wt-helper-list">
+          <li>Use the back of one hand, not the palm.</li>
+          <li>Keep the full hand and wrist visible.</li>
+          <li>Move slowly when the watch appears.</li>
+        </ul>
+      </section>
+
+      <details class="wt-dev-panel">
+        <summary>Developer Tools</summary>
+
+        <div class="wt-dev-content">
+          <div class="wt-button-row">
+            <button class="wt-btn" id="switch-camera-btn" type="button">Switch Camera</button>
+            <button class="wt-btn" id="toggle-debug-btn" type="button">Show Landmarks</button>
+            <button class="wt-btn" id="copy-log-btn" type="button">Copy Log</button>
+            <button class="wt-btn" id="clear-log-btn" type="button">Clear Log</button>
+          </div>
+
+          <div class="wt-sliders">
+            <label class="wt-slider">
+              <span>Scale Trim</span>
+              <input id="watch-scale-slider" type="range" min="0.80" max="1.25" step="0.01" value="1.00" />
+              <output id="watch-scale-output">1.00</output>
+            </label>
+
+            <label class="wt-slider">
+              <span>Roll Trim</span>
+              <input id="rotation-offset-slider" type="range" min="-30" max="30" step="1" value="0" />
+              <output id="rotation-offset-output">0°</output>
+            </label>
+
+            <label class="wt-slider">
+              <span>Wrist Position Trim</span>
+              <input id="wrist-offset-slider" type="range" min="0.15" max="0.40" step="0.01" value="0.24" />
+              <output id="wrist-offset-output">0.24</output>
+            </label>
+          </div>
+
+          <div class="wt-metrics" id="metrics-box">
+            <div><strong>Delegate:</strong> <span id="metric-delegate">—</span></div>
+            <div><strong>Camera:</strong> <span id="metric-camera">—</span></div>
+            <div><strong>Video:</strong> <span id="metric-video">—</span></div>
+            <div><strong>Detections:</strong> <span id="metric-detections">0</span></div>
+            <div><strong>Last hand:</strong> <span id="metric-last-hand">—</span></div>
+          </div>
+
+          <pre class="wt-log" id="debug-log">Booting…</pre>
+        </div>
+      </details>
+    </main>
+  </div>
+
+  <script type="module" src="./js/watch-tryon.js?v=watchoccluderglb29"></script>
+</body>
+</html>
