@@ -1,0 +1,16 @@
+{
+  "headers": [
+    {
+      "source": "/(.*).glb",
+      "headers": [
+        { "key": "Content-Type", "value": "model/gltf-binary" }
+      ]
+    },
+    {
+      "source": "/(.*).hdr",
+      "headers": [
+        { "key": "Content-Type", "value": "application/octet-stream" }
+      ]
+    }
+  ]
+}

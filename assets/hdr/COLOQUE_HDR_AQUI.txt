@@ -1,0 +1,4 @@
+Opcional: se quiser reflexos HDR, coloque aqui o arquivo:
+glasshouse_interior_4k_blur_exp_sat.hdr
+
+O app funciona sem esse HDR; o JS apenas registra um aviso no log.

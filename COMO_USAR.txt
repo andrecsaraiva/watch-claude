@@ -1,0 +1,16 @@
+Estrutura organizada para Vercel:
+
+index.html
+css/watch-tryon.css
+js/watch-tryon.js
+assets/models/relogio-tryon.glb
+assets/hdr/COLOQUE_HDR_AQUI.txt
+vercel.json
+
+No Vercel:
+- Framework Preset: Other
+- Sem build command
+- Sem output directory se nao tiver public/
+
+O arquivo HDR e opcional. Se voce tiver o HDR, coloque em:
+assets/hdr/glasshouse_interior_4k_blur_exp_sat.hdr
