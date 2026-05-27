@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AR Watch Preview</title>
+  <meta name="description" content="Android AR watch preview with high-quality 3D preview and Scene Viewer." />
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.174.0/build/three.module.js"
+      }
+    }
+  </script>
+
+  <script type="module" src="https://unpkg.com/@google/model-viewer@4.1.0/dist/model-viewer-module.min.js"></script>
+  <script type="module" src="https://unpkg.com/@google/model-viewer-effects@1.5.0/dist/model-viewer-effects.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #f3f3ef;
+      --card: #ffffff;
+      --text: #1e1e1c;
+      --muted: #66665e;
+      --accent: #dce6a0;
+      --accent-strong: #cddc7b;
+      --border: #dfdfd8;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      padding: 16px 18px;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px;
+      line-height: 1.45;
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      flex: 1;
+    }
+
+    .viewer-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 12px 34px rgba(0,0,0,0.06);
+    }
+
+    .hero-copy {
+      padding: 18px 18px 0 18px;
+    }
+
+    .hero-copy h1 {
+      margin: 0 0 8px 0;
+      font-size: 22px;
+      line-height: 1.2;
+    }
+
+    .hero-copy p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .cta-wrap {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .ar-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 58px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #111;
+      font-size: 17px;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 8px 20px rgba(205,220,123,0.35);
+    }
+
+    .ar-button:active { background: var(--accent-strong); }
+
+    .small-note {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .viewer-shell {
+      position: relative;
+      background: var(--bg);
+    }
+
+    model-viewer {
+      width: 100%;
+      height: 58vh;
+      min-height: 420px;
+      background: var(--bg);
+      --poster-color: transparent;
+      display: block;
+    }
+
+    .viewer-note {
+      padding: 0 18px 18px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .note {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px 16px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+
+    .note strong { color: var(--text); }
+
+    .note code {
+      background: #f2f2ec;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-family: Consolas, monospace;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="topbar">
+      <div class="title">AR Watch Preview</div>
+      <div class="subtitle">Preview the same watch model used on page 1, then launch the Android camera AR experience.</div>
+    </div>
+
+    <div class="shell">
+      <div class="viewer-card">
+        <div class="hero-copy">
+          <h1>Launch the camera to place the watch in your space</h1>
+          <p>This page stays separate from the try-on flow. It gives you a high-quality 3D preview first, then opens Android Scene Viewer for stable surface placement.</p>
+        </div>
+
+        <div class="cta-wrap">
+          <a class="ar-button" id="open-scene-viewer-btn" href="#">Open Camera AR on Android</a>
+          <div class="small-note">If nothing happens, make sure you are on Android with AR support and open this page in Chrome.</div>
+        </div>
+
+        <div class="viewer-shell">
+          <model-viewer
+            id="preview-viewer"
+            src="./assets/models/relogio.glb"
+            alt="AR watch preview model"
+            camera-controls
+            touch-action="pan-y"
+            shadow-intensity="1"
+            shadow-softness="0.85"
+            exposure="2"
+            environment-image="./assets/hdr/glasshouse_interior_4k_blur_exp_sat.hdr"
+            interaction-prompt="none"
+            camera-orbit="0deg 75deg auto"
+            field-of-view="28deg"
+            loading="eager"
+            reveal="auto"
+          >
+            <effect-composer id="composer" render-mode="quality">
+              <smaa-effect id="fx-smaa"></smaa-effect>
+              <ssao-effect
+                id="fx-ssao"
+                intensity="0.55"
+                radius="0.16"
+                luminance-influence="0.5"
+                bias="0.03"
+              ></ssao-effect>
+              <bloom-effect
+                id="fx-bloom"
+                strength="0.16"
+                threshold="0.82"
+                radius="0.42"
+              ></bloom-effect>
+              <color-grade-effect
+                id="fx-color"
+                tonemapping="aces_filmic"
+                contrast="0.04"
+                saturation="0.05"
+              ></color-grade-effect>
+            </effect-composer>
+          </model-viewer>
+        </div>
+
+        <div class="viewer-note">
+          This preview uses the same watch GLB and the same local HDR/environment approach as the page 1 viewer.
+        </div>
+      </div>
+
+      <div class="note">
+        <strong>Android:</strong> this page uses a native Scene Viewer launch for AR, which is better suited to stable surface placement and walk-around viewing than the wrist try-on. The GLB file used is <code>assets/models/relogio.glb</code>.
+      </div>
+
+      <div class="note">
+        <strong>iPhone / iPad:</strong> not enabled in this version. We can add a separate Quick Look path later with a <code>.usdz</code> export if needed.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const button = document.getElementById('open-scene-viewer-btn');
+
+    function buildSceneViewerIntent() {
+      const modelUrl = new URL('./assets/models/relogio.glb', window.location.href).href;
+      const fallbackUrl = encodeURIComponent(window.location.href);
+
+      return 'intent://arvr.google.com/scene-viewer/1.0?file='
+        + encodeURIComponent(modelUrl)
+        + '&mode=ar_only&resizable=true#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url='
+        + fallbackUrl
+        + ';end;';
+    }
+
+    button.setAttribute('href', buildSceneViewerIntent());
+  </script>
+</body>
+</html>

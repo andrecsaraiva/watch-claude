@@ -1,4 +1,5 @@
 const WATCH_MODEL_PATH = './assets/models/relogio-tryon.glb';
+const OCCLUSION_MODEL_PATH = './assets/models/relogio-occlusion.glb';
 const HAND_MODEL_URL = 'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task';
 const HDR_ENV_PATH = './assets/hdr/glasshouse_interior_4k_blur_exp_sat.hdr';
 
@@ -34,7 +35,7 @@ const metricLastHand = document.getElementById('metric-last-hand');
 
 const CONFIG = {
   facingMode: 'environment',
-  modelScaleTrim: 1.25,
+  modelScaleTrim: 0.85,
   rollTrimDeg: 20,
   wristOffsetTrim: 0.5,
   autoScaleFactor: 1.02,
@@ -62,6 +63,8 @@ const state = {
   modelRoot: null,
   modelSize: null,
   modelRefSize: 0.05,
+  occluderRoot: null,
+  occlusionLoaded: false,
   renderer: null,
   scene: null,
   camera: null,
@@ -322,6 +325,54 @@ async function loadEnvironment() {
   }
 }
 
+
+function applyDepthOnlyOccluderMaterial(root, label = 'occluder') {
+  const THREE = state.libs.THREE;
+  const depthOnlyMat = new THREE.MeshBasicMaterial({
+    color: 0x000000,
+    side: THREE.DoubleSide,
+  });
+  depthOnlyMat.colorWrite = false;
+  depthOnlyMat.depthWrite = true;
+  depthOnlyMat.depthTest = true;
+
+  let meshCount = 0;
+  root.traverse((obj) => {
+    if (!obj.isMesh) return;
+    obj.material = depthOnlyMat;
+    obj.renderOrder = 0;
+    obj.frustumCulled = false;
+    meshCount += 1;
+  });
+
+  root.renderOrder = 0;
+  logLine(`${label} depth-only material applied to ${meshCount} mesh(es).`);
+}
+
+async function loadWatchOccluder(root, watchCenter) {
+  const loader = new state.libs.GLTFLoader();
+  logLine(`Loading wrist occluder from ${OCCLUSION_MODEL_PATH}`);
+
+  try {
+    const gltf = await loader.loadAsync(OCCLUSION_MODEL_PATH);
+    const occluder = gltf.scene;
+
+    // Same model-space offset used by the visible watch model, so a separate
+    // occlusion GLB with the same pivot/orientation stays aligned.
+    occluder.position.sub(watchCenter);
+
+    applyDepthOnlyOccluderMaterial(occluder, 'External occluder');
+    root.add(occluder);
+
+    state.occluderRoot = occluder;
+    state.occlusionLoaded = true;
+    logLine('External wrist occluder loaded and attached to watch root.', 'ok');
+  } catch (error) {
+    state.occlusionLoaded = false;
+    logLine(`External wrist occluder failed: ${error?.message || error}. Continuing without separate occlusion GLB.`, 'warn');
+  }
+}
+
 async function loadWatchModel() {
   const THREE = state.libs.THREE;
   const loader = new state.libs.GLTFLoader();
@@ -330,7 +381,7 @@ async function loadWatchModel() {
   await new Promise((resolve, reject) => {
     loader.load(
       WATCH_MODEL_PATH,
-      (gltf) => {
+      async (gltf) => {
         const root = new THREE.Group();
         const content = gltf.scene;
 
@@ -406,10 +457,12 @@ async function loadWatchModel() {
           obj.renderOrder = 1;
         });
 
+        await loadWatchOccluder(root, center.clone());
+
         state.scene.add(root);
         state.modelLoaded = true;
 
-        logLine(`Watch model loaded. bbox=${size.x.toFixed(4)} x ${size.y.toFixed(4)} x ${size.z.toFixed(4)} m | case width (modelRefSize)=${state.modelRefSize.toFixed(4)} m (${(state.modelRefSize*1000).toFixed(0)}mm) | occluder=${state.occluderRoot ? 'YES' : 'NO'}`);
+        logLine(`Watch model loaded. bbox=${size.x.toFixed(4)} x ${size.y.toFixed(4)} x ${size.z.toFixed(4)} m | case width (modelRefSize)=${state.modelRefSize.toFixed(4)} m (${(state.modelRefSize*1000).toFixed(0)}mm) | occluder=${state.occluderRoot ? 'YES' : 'NO'} | externalOccluder=${state.occlusionLoaded ? 'YES' : 'NO'}`);
         resolve();
       },
       undefined,

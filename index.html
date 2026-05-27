@@ -3,105 +3,246 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Watch Try-On</title>
+  <title>TheRealReal - Watch Mock Product Page</title>
   <meta
     name="description"
-    content="Stable watch try-on prototype using wrist tracking on the phone camera."
+    content="Responsive fake product page inspired by The RealReal, prepared for 3D, AR and QR code modules."
   />
-  <link rel="stylesheet" href="./css/watch-tryon.css" />
-  <meta name="google-site-verification" content="yvirgHkK75jDTmiv63DkEbG8oeBQT0Wx2xn8XCwj3Uk" />
+  <link rel="stylesheet" href="./css/styles.css" />
+
+  <!-- Legacy pinned setup that worked in the isolated effects test -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.174.0/build/three.module.js"
+      }
+    }
+  </script>
+
+  <script type="module" src="https://unpkg.com/@google/model-viewer@4.1.0/dist/model-viewer-module.min.js"></script>
+  <script type="module" src="https://unpkg.com/@google/model-viewer-effects@1.5.0/dist/model-viewer-effects.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
-  <div class="wt-app">
-    <header class="wt-topbar">
-      <div class="wt-eyebrow">Watch Try-On</div>
-      <h1 class="wt-title">See the watch on your wrist</h1>
-      <p class="wt-subtitle">
-        Point your camera at the back of one hand. Keep your fingers visible and your wrist well lit.
-      </p>
+  <div class="promo-bar">20% Off Code: REAL — Terms Apply*</div>
+
+  <div class="page-shell">
+    <div class="utility-bar">Hi, check your email for a $25 site credit offer code.</div>
+
+    <header class="header">
+      <div class="logo">TheRealReal</div>
+
+      <form class="search" role="search">
+        <input type="search" placeholder="Search for ski gear" aria-label="Search products" />
+        <button type="submit" aria-label="Search">⌕</button>
+      </form>
+
+      <div class="header-actions">
+        <a href="#" class="sell-btn">Sell</a>
+        <a href="#"><strong>My TRR</strong></a>
+        <span class="icon-dot">⌖</span>
+        <span class="icon-dot">◯</span>
+        <span class="icon-dot">♡</span>
+        <span class="icon-dot">0</span>
+      </div>
     </header>
 
-    <main class="wt-main">
-      <section class="wt-stage-card">
-        <div class="wt-stage" id="stage">
-          <video id="camera-video" playsinline autoplay muted></video>
-          <canvas id="three-canvas"></canvas>
-          <canvas id="debug-canvas" hidden></canvas>
+    <nav class="nav" aria-label="Main categories">
+      <a href="#">New Arrivals</a>
+      <a href="#">Designers</a>
+      <a href="#">Women</a>
+      <a href="#">Bags</a>
+      <a href="#">Men</a>
+      <a href="#">Jewelry</a>
+      <a href="#">Watches</a>
+      <a href="#">Home</a>
+      <a href="#">Kids</a>
+      <a href="#">Sale</a>
+    </nav>
 
-          <div class="wt-overlay">
-            <div class="wt-status" id="status-pill">Preparing try-on…</div>
+    <div class="breadcrumbs" aria-label="Breadcrumb">
+      <span>Bottega Veneta:</span>
+      <a href="#">All</a>
+      <span>/</span>
+      <a href="#">Women</a>
+      <span>/</span>
+      <a href="#">Handbags</a>
+      <span>/</span>
+      <a href="#">Clutches</a>
+    </div>
 
-            <div class="wt-center-cta" id="center-cta">
-              <div class="wt-onboarding-card">
-                <div class="wt-onboarding-title">Start watch try-on</div>
-                <div class="wt-onboarding-copy">
-                  Use the rear camera for the best result. Show the full hand plus wrist.
-                </div>
-                <button class="wt-btn wt-btn-primary wt-btn-large" id="start-camera-btn" type="button">Start Try-On</button>
-              </div>
-            </div>
+    <main class="product-grid">
+      <aside class="thumbs" aria-label="Product thumbnails">
+        <button class="thumb is-active" type="button" data-view="image" data-label="Square image" aria-label="Select thumbnail 1">
+          <div class="placeholder-inner">Square<br />image</div>
+        </button>
 
-            <div class="wt-hint" id="hint-text">
-              Hold the back of your hand in frame. Keep fingers slightly apart.
-            </div>
+        <button class="thumb" type="button" data-view="image" data-label="Vertical image" aria-label="Select thumbnail 2">
+          <div class="placeholder-inner">Vertical<br />image</div>
+        </button>
+
+        <button class="thumb" type="button" data-view="image" data-label="Square image" aria-label="Select thumbnail 3">
+          <div class="placeholder-inner">Square<br />image</div>
+        </button>
+
+        <button class="thumb" type="button" data-view="image" data-label="Square image" aria-label="Select thumbnail 4">
+          <div class="placeholder-inner">Square<br />image</div>
+        </button>
+
+        <button class="thumb" type="button" data-view="image" data-label="Horizontal image" aria-label="Select thumbnail 5">
+          <div class="placeholder-inner">Horizontal<br />image</div>
+        </button>
+
+        <button class="thumb" type="button" data-view="image" data-label="Close-up" aria-label="Select close-up">
+          <div class="placeholder-inner">Close-up</div>
+        </button>
+
+        <button class="thumb thumb-model" type="button" data-view="model" data-label="3D / AR Viewer" aria-label="Select 3D product view">
+          <div class="placeholder-inner">3D / AR</div>
+        </button>
+      </aside>
+
+      <section class="hero-stage" aria-label="Main product media">
+        <div class="hero-image" id="hero-image-slot">
+          <div class="hero-placeholder">
+            MAIN IMAGE BLOCK<br />
+            You can replace this with any product photo
+          </div>
+        </div>
+
+        <div class="viewer-toolbar" id="viewer-toolbar" hidden>
+          <button class="viewer-btn" id="reset-camera-btn" type="button">Reset Camera</button>
+          <button class="viewer-btn" id="toggle-rotate-btn" type="button">Enable Rotation</button>
+          <button class="viewer-btn" id="toggle-effects-btn" type="button">Disable Effects</button>
+          <button class="viewer-btn" id="preset-subtle-btn" type="button">Subtle Preset</button>
+          <button class="viewer-btn" id="preset-strong-btn" type="button">Strong Preset</button>
+          <button class="viewer-btn viewer-btn-primary" id="open-ar-btn" type="button">AR</button>
+          <button class="viewer-btn viewer-btn-primary" id="open-watch-tryon-btn" type="button">Try-On Watch</button>
+        </div>
+
+        <div class="viewer-quality-note" id="viewer-quality-note" hidden>
+          Legacy pinned viewer: SMAA, SSAO, Bloom and Color Grade.
+        </div>
+
+        <div class="below-stage">
+          <div class="wide-placeholder">
+            <div class="placeholder-inner">Extra image block</div>
+          </div>
+          <div class="wide-placeholder">
+            <div class="placeholder-inner">Extra image block</div>
           </div>
         </div>
       </section>
 
-      <section class="wt-helper-card">
-        <div class="wt-helper-title">How to get the best result</div>
-        <ul class="wt-helper-list">
-          <li>Use the back of one hand, not the palm.</li>
-          <li>Keep the full hand and wrist visible.</li>
-          <li>Move slowly when the watch appears.</li>
-        </ul>
-      </section>
-
-      <details class="wt-dev-panel">
-        <summary>Developer Tools</summary>
-
-        <div class="wt-dev-content">
-          <div class="wt-button-row">
-            <button class="wt-btn" id="switch-camera-btn" type="button">Switch Camera</button>
-            <button class="wt-btn" id="toggle-debug-btn" type="button">Show Landmarks</button>
-            <button class="wt-btn" id="copy-log-btn" type="button">Copy Log</button>
-            <button class="wt-btn" id="clear-log-btn" type="button">Clear Log</button>
-          </div>
-
-          <div class="wt-sliders">
-            <label class="wt-slider">
-              <span>Scale Trim</span>
-              <input id="watch-scale-slider" type="range" min="0.80" max="1.25" step="0.01" value="1.00" />
-              <output id="watch-scale-output">1.00</output>
-            </label>
-
-            <label class="wt-slider">
-              <span>Roll Trim</span>
-              <input id="rotation-offset-slider" type="range" min="-30" max="30" step="1" value="0" />
-              <output id="rotation-offset-output">0°</output>
-            </label>
-
-            <label class="wt-slider">
-              <span>Wrist Position Trim</span>
-              <input id="wrist-offset-slider" type="range" min="0.15" max="0.40" step="0.01" value="0.24" />
-              <output id="wrist-offset-output">0.24</output>
-            </label>
-          </div>
-
-          <div class="wt-metrics" id="metrics-box">
-            <div><strong>Delegate:</strong> <span id="metric-delegate">—</span></div>
-            <div><strong>Camera:</strong> <span id="metric-camera">—</span></div>
-            <div><strong>Video:</strong> <span id="metric-video">—</span></div>
-            <div><strong>Detections:</strong> <span id="metric-detections">0</span></div>
-            <div><strong>Last hand:</strong> <span id="metric-last-hand">—</span></div>
-          </div>
-
-          <pre class="wt-log" id="debug-log">Booting…</pre>
+      <aside class="product-info">
+        <div class="top-meta">
+          <div class="pick-tag">Editors' Pick</div>
+          <div class="likes">168 <span class="heart">♡</span></div>
         </div>
-      </details>
+
+        <h1 class="brand">Bottega Veneta</h1>
+        <div class="subtitle">Intrecciato Intrecciato Andiamo Clutch</div>
+        <div class="discount">21% Off Est. Retail $3,500</div>
+        <div class="price">$2,750.00</div>
+        <p class="loan">Starting at $134/mo or 0% APR with affirm.<br /><a href="#">See if you qualify</a></p>
+
+        <button class="cta" type="button">Add to Bag</button>
+        <div class="fine-print">Final sale without purchase of Return Guarantee.</div>
+
+        <div class="return-box">
+          <div class="return-title">Make It Returnable</div>
+          <div class="return-option">
+            <div class="checkbox" aria-hidden="true"></div>
+            <div>Add Return Guarantee for $251.63</div>
+          </div>
+          <div class="powered">
+            <span>Powered by XCOVER.COM</span>
+            <a href="#" class="underlined">What's covered</a>
+          </div>
+        </div>
+
+        <div class="accordion">
+          <details class="section" open>
+            <summary>Description <span class="chev"></span></summary>
+            <div class="section-body">
+              <ul>
+                <li>Bottega Veneta Clutch</li>
+                <li>Burgundy Leather</li>
+                <li>Intrecciato Weave</li>
+                <li>Gold-Tone Hardware</li>
+                <li>Flat Handle &amp; Chain-Link Shoulder Strap</li>
+              </ul>
+            </div>
+          </details>
+
+          <details class="section">
+            <summary>Details <span class="chev"></span></summary>
+            <div class="section-body">Space for technical details, materials, measurements and extra notes.</div>
+          </details>
+
+          <details class="section">
+            <summary>Condition <span class="chev"></span></summary>
+            <div class="section-body">Space for condition notes, signs of wear and authentication info.</div>
+          </details>
+
+          <details class="section">
+            <summary>Sustainability Calculator <span class="chev"></span></summary>
+            <div class="section-body">Reserved space for a future module.</div>
+          </details>
+
+          <details class="section" open>
+            <summary>Shipping &amp; Returns <span class="chev"></span></summary>
+            <div class="section-body">
+              <div class="shipping-copy">This item is final sale and is not returnable.</div>
+              <div class="shipping-copy">See the <a href="#" class="underlined">Return Policy</a> for more details.</div>
+            </div>
+          </details>
+
+          <details class="section">
+            <summary>Authentication <span class="chev"></span></summary>
+            <div class="section-body">Space for authentication and provenance details.</div>
+          </details>
+        </div>
+
+        <div class="sell-card">
+          <div class="mini-card-icon">✓</div>
+          <div>
+            <div class="appointment-copy">Have a similar item?</div>
+            <a href="#" class="underlined">Book An Appointment To Sell</a>
+          </div>
+        </div>
+
+        <div class="socials" aria-label="Social media">
+          <span>f</span>
+          <span>p</span>
+          <span>x</span>
+        </div>
+      </aside>
     </main>
   </div>
 
-  <script type="module" src="./js/watch-tryon.js?v=watchoccluderglb29"></script>
+  <div class="modal" id="ar-modal" hidden>
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="ar-modal-title">
+      <button class="modal-close" id="close-ar-modal-btn" type="button" aria-label="Close modal">×</button>
+      <div class="modal-eyebrow" id="ar-modal-eyebrow">AR / Try-on</div>
+      <h2 class="modal-title" id="ar-modal-title">Scan to open on your phone</h2>
+      <p class="modal-copy" id="ar-modal-copy">
+        Use this QR code to open the mobile experience. For a real phone test, replace the URL in <code>js/main.js</code> with your public AR link.
+      </p>
+
+      <div class="qr-box">
+        <div id="qr-code"></div>
+      </div>
+
+      <div class="modal-actions">
+        <a class="viewer-btn viewer-btn-primary" id="open-ar-link" href="#" target="_blank" rel="noopener noreferrer">Open AR Link</a>
+      </div>
+
+      <div class="modal-footnote" id="ar-url-text"></div>
+    </div>
+  </div>
+
+  <script src="./js/main.js?v=watchsplit1"></script>
 </body>
 </html>
